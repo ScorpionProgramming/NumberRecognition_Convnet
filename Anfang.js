@@ -1,8 +1,6 @@
 
 let fs = require('fs');
 const convnetjs = require("./convnet.js");
-  //test
-let score = 0;
 
 // 1. Rohdaten besorgen
 let digits = [];
@@ -18,7 +16,7 @@ for (let i = 0; i < 10; i++) {
 // 2. Trainingsdaten vorbereiten
 let trainingData = [];
 for (let i = 0; i < 10; i++) {
-    for (let count = 0; count < 400; count++) {
+    for (let count = 0; count < 600; count++) {
         let singleTrainingData = {
             // Problem: Das ist eindimensional, evtl. ändern auf 2D-Array mit 28*28
             input: new convnetjs.Vol(digits[i].slice(count * 784, (count + 1) * 784)),
@@ -45,25 +43,29 @@ for (let i = 0; i < 100; i++) {
     trainingData.forEach(data => {
     trainer.train(data.input, data.output); // train the network, specifying that x is class zero
 });
+//console.log("arbeitet in Runde " + i + " ......");
+console.log(`${i+1}. Durchgang: `);
 benchmark();
 } 
 
 // 5. Validieren
 function benchmark() {
-    for(let imagecount; imagecount < 200; imagecount++){
-        for(let number; number < 10; number++){
+    let imageMax = 200;
+    for(let number = 0; number < 10; number++){
+        //Score - how good the network is trained.
+        let score = 0; 
+        for(let imagecount = 0; imagecount < imageMax; imagecount++){
 
-            let obj = net.forward(new convnetjs.Vol(digits[number].slice(700+imagecount * 784, 70+imagecount+1 * 784)));
-            
-            console.log(`Laenge des DigitsArrays: ${digits.length}`);
+            //console.log(`Imagecount: ${imagecount} | Number: ${number}` );
+            let obj = net.forward(new convnetjs.Vol(digits[number].slice((600+imagecount) * 784, (600+imagecount+1) * 784)));
             
             //console.log("erg: " + JSON.stringify(net.forward(new convnetjs.Vol(digits[5].slice(700 * 784, 701 * 784)))));
-            
-            console.log(`${number} =  ${obj.w[number]}`);
-            let highest = 0;
+
+            //console.log(`${number} = ${obj.w[number]}`);
             
             //get the hightest percent 
             //check every percent where what number peaks out
+            let highest = 0;
             for(let i = 0; i < 10; i++){
                 if(obj.w[i] > obj.w[highest]){
                     highest = i;
@@ -75,8 +77,10 @@ function benchmark() {
             if(highest == number){
                 score = score + 1;
             }
-            
-            console.log(`Highest: ${highest} Score: ${score}`);
+            //console.log(`Highest: ${highest} Score: ${score}`);
         }
+        //Auswertung
+        console.log(`Auswertung für ${number}: ${score}/${imageMax} = ${Math.round(((score/imageMax)*100)*100)/100} % richtig`);
     }
+    console.log("-------------------------------------------------------------------------------------------");
 }
