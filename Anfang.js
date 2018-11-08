@@ -12,7 +12,7 @@ for (let i = 0; i < 10; i++) {
 for (let i = 0; i < 10; i++) {
     console.log(`loaded digit ${i}: ${digits[i].length / 784}`);
 }
- 
+
 // 2. Trainingsdaten vorbereiten
 let trainingData = [];
 for (let i = 0; i < 10; i++) {
@@ -25,6 +25,9 @@ for (let i = 0; i < 10; i++) {
         trainingData.push(singleTrainingData);
     }
 }
+
+//einmal die Trainingsdaten Shufflen
+shuffle(trainingData);
  
 // 3. Netz bauen
 layer_defs = [];
@@ -83,4 +86,19 @@ function benchmark() {
         console.log(`Auswertung für ${number}: ${score}/${imageMax} = ${Math.round(((score/imageMax)*100)*100)/100} % richtig`);
     }
     console.log("-------------------------------------------------------------------------------------------");
+}
+
+
+function shuffle(array){
+    //bist du ein array? nein dann brech ab sonst weiter
+    for(let i = 0; i < array.length; i++){
+        let randompos = Math.floor(Math.random() * array.length);
+        swap(array, i, randompos);
+    }
+}
+
+function swap(array, pos1, pos2){
+    let temp = array[pos1];
+    array[pos1] = array[pos2];
+    array[pos2] = temp;
 }
